@@ -28,11 +28,11 @@ interface MultiLineChartProps {
 }
 
 const datasetOptions = [
-  { label: 'Thirty Day Mortality', borderColor: 'rgb(255, 99, 132)', backgroundColor: 'rgba(255, 99, 132, 0.5)', isVisible: true },
-  { label: 'Sixty Day Mortality', borderColor: 'rgb(54, 162, 235)', backgroundColor: 'rgba(54, 162, 235, 0.5)', isVisible: true },
-  { label: 'Ninety Day Mortality', borderColor: 'rgb(255, 206, 86)', backgroundColor: 'rgba(255, 206, 86, 0.5)', isVisible: true },
-  { label: 'eFrailty', borderColor: 'rgb(75, 192, 192)', backgroundColor: 'rgba(75, 192, 192, 0.5)', isVisible: true },
-  { label: 'MESH', borderColor: 'rgb(153, 102, 255)', backgroundColor: 'rgba(153, 102, 255, 0.5)', isVisible: true },
+  { label: 'Thirty Day Mortality', borderColor: 'rgb(255, 99, 132)', backgroundColor: 'rgba(255, 99, 132, 0.5)', pointStyle: 'circle', isVisible: true },
+  { label: 'Sixty Day Mortality', borderColor: 'rgb(54, 162, 235)', backgroundColor: 'rgba(54, 162, 235, 0.5)', pointStyle: 'star' , isVisible: true },
+  { label: 'Ninety Day Mortality', borderColor: 'rgb(255, 206, 86)', backgroundColor: 'rgba(255, 206, 86, 0.5)', pointStyle: 'rect', isVisible: true },
+  { label: 'eFrailty', borderColor: 'rgb(75, 192, 192)', backgroundColor: 'rgba(75, 192, 192, 0.5)', pointStyle: 'triangle', isVisible: true },
+  { label: 'MESH', borderColor: 'rgb(153, 102, 255)', backgroundColor: 'rgba(153, 102, 255, 0.5)',pointStyle: 'cross', isVisible: true },
 ];
 
 const options: ChartOptions<'line'> = {
@@ -82,6 +82,7 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
         borderColor: option.borderColor,
         backgroundColor: option.backgroundColor,
         borderWidth: 1,
+        pointStyle: option.pointStyle,
         fill: true,
       };
     });
