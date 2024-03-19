@@ -41,7 +41,7 @@ const DataTable: React.FC<DataTableProps> = ({ data }) => {
           <button
             type="button"
             onClick={() => downloadCSV(data)}
-            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="block rounded-md bg-[#990000] px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-[#FFCC00] hover:text-[#231F20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
             Download Data
           </button>
