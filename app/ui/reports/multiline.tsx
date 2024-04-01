@@ -85,8 +85,8 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
 
 
   return (
-    <div className="flex flex-col items-center w-full px-4">
-    <Line data={chartData} options={options} />
+    <div className="flex flex-col items-center w-full px-4 shadow-lg p-4 rounded-lg border-2 border-[#990000]">
+        <Line data={chartData} options={options} />
     <div className="w-full mt-4 bg-[#990000] p-4 rounded-md">
       <div className="flex flex-wrap justify-center items-center gap-4">
         {datasetOptions.map((dataset, index) => (

@@ -1,6 +1,6 @@
 import { lusitana } from '@/app/ui/fonts';
 import fetchHealthData from '../lib/data';
-import MultiLineChart from '../ui/dashboard/multiline';
+import MultiLineChart from '../ui/reports/multiline';
  
 export default async function Page() {
     const chartData = await fetchHealthData();

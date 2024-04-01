@@ -10,8 +10,8 @@ export default function SideNav() {
         className="mb-2 flex h-20 items-end justify-start rounded-md bg-[#990000] p-4 md:h-40"
         href="/"
       >
-        <div className="w-32 text-[#FFCC00] md:w-40">
-          {<h1 className = {`${lusitana.className} text-7xl`}>USC</h1>}
+        <div className="w-32 text-white md:w-40">
+          {<h1 className = {`${lusitana.className} text-4xl`}>Keck Medicine of <span className='text-[#FFCC00]'>USC</span></h1>}
         </div>
       </Link>
       <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">

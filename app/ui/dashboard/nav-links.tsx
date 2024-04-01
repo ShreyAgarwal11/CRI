@@ -2,6 +2,7 @@
 import {
   ChartBarIcon,
   TableCellsIcon,
+  IdentificationIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -9,7 +10,12 @@ import clsx from 'clsx';
 
 const links = [
   {
-    name: 'Reports',
+    name: 'Patient Info',
+    href: '/dashboard/info',
+    icon: IdentificationIcon,
+  },
+  {
+    name: 'Patient Report',
     href: '/dashboard/reports',
     icon: ChartBarIcon,
   },
