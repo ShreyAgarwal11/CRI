@@ -40,7 +40,7 @@ export default function NavLinks() {
           'hidden md:block',
           {
             'text-[#231F20]': isActive, // Active state
-            'text-white': !isActive, // Default state
+            'text-black': !isActive, // Default state
           },
           'group-hover:text-[#231F20]' // Hover state for the text
         );
@@ -49,7 +49,7 @@ export default function NavLinks() {
           'w-6 h-6',
           {
             'text-[#231F20]': isActive, // Active state
-            'text-white': !isActive, // Default state
+            'text-black': !isActive, // Default state
           },
           'group-hover:text-[#231F20]' // Hover state for the icon
         );
@@ -60,7 +60,7 @@ export default function NavLinks() {
             href={link.href}
             className={clsx(
               'flex h-[48px] grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3',
-              isActive ? 'bg-[#FFCC00]' : 'bg-[#990000]',
+              isActive ? 'bg-[#FFCC00]' : 'bg-gray-100',
               'hover:bg-[#FFCC00] group' // Added 'group' class to handle hover state for children
             )}
           >

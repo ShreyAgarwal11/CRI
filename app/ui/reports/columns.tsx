@@ -1,9 +1,9 @@
 'use client';
 import { useState } from "react";
-import EFrailtyModal from "./popup";
+import EFrailtyDialog from "./popup";
 
 export default function Features() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
         <div className="mt-6 grid grid-cols-2 gap-x-8">
@@ -51,13 +51,9 @@ export default function Features() {
                     {/* Feature rows */}
                     <tr>
                     <td className="relative px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center gap-2">
-                            <span className="inline-block h-4 w-4 bg-[#ff0000]" onMouseEnter={() => setIsModalOpen(true)} onMouseLeave={() => setIsModalOpen(false)}></span>
-                            eFrailty Score
-                            {isModalOpen && (
-                                <div className="absolute top-full mt-1"> {/* Adjust these classes as needed */}
-                                    <EFrailtyModal />
-                                </div>
-                            )}
+                            <span className="inline-block h-4 w-4 bg-[#ff0000]"></span>
+                            <button onClick={() => setIsOpen(true)}>eFrailty Score</button>
+                            <EFrailtyDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                         <span className="inline-flex px-2 text-xs font-semibold leading-5 text-[#ff0000] rounded-full">

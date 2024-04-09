@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { ChartData, ChartOptions } from 'chart.js';
 import { HealthMetric } from '@/app/lib/definitions';
+import Select from 'react-select';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
@@ -19,19 +20,11 @@ interface MultiLineChartProps {
   data: HealthMetric[];
 }
 
-const datasetOptions = [
-  { label: 'Thirty Day Mortality', borderColor: 'rgb(255, 99, 132)', backgroundColor: 'rgba(255, 99, 132, 0.5)', pointStyle: 'circle', isVisible: true },
-  { label: 'Sixty Day Mortality', borderColor: 'rgb(54, 162, 235)', backgroundColor: 'rgba(54, 162, 235, 0.5)', pointStyle: 'star' , isVisible: true },
-  { label: 'Ninety Day Mortality', borderColor: 'rgb(255, 206, 86)', backgroundColor: 'rgba(255, 206, 86, 0.5)', pointStyle: 'rect', isVisible: true },
-  { label: 'eFrailty', borderColor: 'rgb(75, 192, 192)', backgroundColor: 'rgba(75, 192, 192, 0.5)', pointStyle: 'triangle', isVisible: true },
-  { label: 'MESH', borderColor: 'rgb(153, 102, 255)', backgroundColor: 'rgba(153, 102, 255, 0.5)',pointStyle: 'cross', isVisible: true },
-];
-
 const options: ChartOptions<'line'> = {
   responsive: true,
   plugins: {
     legend: {
-      display: true, // Hide the default legend to use the custom one
+      display: true,
     },
   },
   scales: {
@@ -51,9 +44,17 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
     datasets: [],
   });
 
+  const datasetOptions = [
+    { label: 'Thirty Day Mortality', borderColor: 'rgb(255, 99, 132)', backgroundColor: 'rgba(255, 99, 132, 0.5)', pointStyle: 'circle', isVisible: true },
+    { label: 'Sixty Day Mortality', borderColor: 'rgb(54, 162, 235)', backgroundColor: 'rgba(54, 162, 235, 0.5)', pointStyle: 'star' , isVisible: true },
+    { label: 'Ninety Day Mortality', borderColor: 'rgb(255, 206, 86)', backgroundColor: 'rgba(255, 206, 86, 0.5)', pointStyle: 'rect', isVisible: true },
+    { label: 'eFrailty', borderColor: 'rgb(75, 192, 192)', backgroundColor: 'rgba(75, 192, 192, 0.5)', pointStyle: 'triangle', isVisible: true },
+    { label: 'MESH', borderColor: 'rgb(153, 102, 255)', backgroundColor: 'rgba(153, 102, 255, 0.5)',pointStyle: 'cross', isVisible: true },
+  ];
+
   const [visibleDatasets, setVisibleDatasets] = useState<VisibleDatasets>(
     datasetOptions.reduce((acc: VisibleDatasets, option) => {
-      acc[option.label] = true; // Start with all datasets visible. Adjusted option.isVisible to true for clarity.
+      acc[option.label] = true;
       return acc;
     }, {})
   );
@@ -61,17 +62,15 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
   useEffect(() => {
     const labels = data.map(d => d.month.toLocaleDateString());
     const datasets = datasetOptions.filter(option => visibleDatasets[option.label]).map((option) => {
-      // Convert label to a key in the HealthMetric interface
       const dataKey = option.label.replace(/\s+/g, '_').toLowerCase() as keyof HealthMetric;
       const metricData = data.map(d => {
         const value = d[dataKey];
-        // Ensure the value is a number, providing a fallback of 0 if undefined
-        return typeof value === 'number' ? value : 0; // This ensures the data array consists of numbers only
+        return typeof value === 'number' ? value : 0;
       });
 
       return {
         label: option.label,
-        data: metricData, // This should now be strictly an array of numbers
+        data: metricData,
         borderColor: option.borderColor,
         backgroundColor: option.backgroundColor,
         borderWidth: 1,
@@ -81,33 +80,111 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
     });
 
     setChartData({ labels, datasets });
-}, [data, visibleDatasets]); // Make sure to add visibleDatasets as a dependency
+}, [data, visibleDatasets]);
+
+const handleOutcomeChange = (selectedOptions: { value: string; label: string; }[] | null) => {
+  if (selectedOptions && Array.isArray(selectedOptions)) {
+    const selectedOutcomes = selectedOptions.map(option => option.value);
+    const newVisibleDatasets: VisibleDatasets = {};
+    datasetOptions.forEach(option => {
+      newVisibleDatasets[option.label] = selectedOutcomes.includes(option.label);
+    });
+    setVisibleDatasets(newVisibleDatasets);
+  }
+};
 
 
-  return (
-    <div className="flex flex-col items-center w-full px-4 shadow-lg p-4 rounded-lg border-2 border-[#990000]">
-        <Line data={chartData} options={options} />
-    <div className="w-full mt-4 bg-[#990000] p-4 rounded-md">
-      <div className="flex flex-wrap justify-center items-center gap-4">
-        {datasetOptions.map((dataset, index) => (
-          <label key={index} htmlFor={`checkbox-${dataset.label}`} className="flex items-center gap-2 cursor-pointer hover:text-[#231F20]">
-            <input
-              type="checkbox"
-              id={`checkbox-${dataset.label}`}
-              className="form-checkbox text-[#231F20] rounded border-gray-300 shadow-sm focus:border-[#231F20] focus:ring focus:ring-offset-0 focus:ring-[#231F20] focus:ring-opacity-50"
-              checked={visibleDatasets[dataset.label]}
-              onChange={(e) => {
-                const newVisibility = { ...visibleDatasets, [dataset.label]: e.target.checked };
-                setVisibleDatasets(newVisibility);
-              }}
-            />
-            <span className="text-sm sm:text-base text-white">{dataset.label}</span>
-          </label>
-        ))}
+
+const specialityOptions = ['Internal Medicine', 'Pediatrics', 'Surgery'];
+const settingOptions = ['Outpatient', 'Inpatient', 'Emergency'];
+const nameOptions = ['Doe, Joe', 'Smith, Alice', 'Brown, John'];
+const locationNameOptions = ['Keck Medicine of USC', 'Mayo Clinic', 'Johns Hopkins Hospital'];
+
+return (
+  <div className="flex flex-col items-center w-full px-4 shadow-lg p-4 rounded-lg border-2 border-[#990000]">
+    <div className="flex flex-wrap justify-between w-full mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="w-full mb-4 bg-[#990000] p-5">
+        <label htmlFor="speciality" className="block text-white font-bold mb-2">Speciality</label>
+        <select id="speciality" className="p-2 rounded border border-gray-300" style={{ width: '100%' }}>
+          {specialityOptions.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="w-full mb-4 bg-[#990000] p-5">
+        <label htmlFor="setting" className="block text-white font-bold mb-2">Setting</label>
+        <select id="setting" className="p-2 rounded border border-gray-300" style={{ width: '100%' }}>
+          {settingOptions.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="w-full md:w-auto mb-4 bg-[#990000] p-5">
+        <label htmlFor="name" className="block text-white font-bold mb-2">Name</label>
+        <select id="name" className="p-2 rounded border border-gray-300" style={{ width: '100%' }}>
+          {nameOptions.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
-  </div>
-  );
+    <div className="flex flex-wrap justify-between w-full mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="w-full sm:w-1/2 md:w-auto mb-4 bg-[#990000] p-5">
+        <label htmlFor="location" className="block text-white font-bold mb-2">Location Name</label>
+        <select id="location" className="p-2 rounded border border-gray-300" style={{ width: '100%' }}>
+          {locationNameOptions.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="w-full sm:w-1/2 md:w-auto mb-4 bg-[#990000] p-5 relative">
+  <label htmlFor="outcomes" className="block text-white font-bold mb-2">Outcome</label>
+  <Select
+    id="outcomes"
+    className="p-2 rounded border border-gray-300"
+    options={datasetOptions.map(option => ({ value: option.label, label: option.label }))}
+    isMulti
+    menuPlacement="top"
+    styles={{ 
+      control: provided => ({ ...provided, maxHeight: '10px', overflowY: 'auto'  }), // Set a fixed height for the control
+    }}
+    onChange={(selectedOptions) => {
+      if (selectedOptions) {
+        const selectedValues = selectedOptions.map(option => ({ value: option.value, label: option.label }));
+        handleOutcomeChange(selectedValues);
+      }
+    }}
+  />
+</div>
+
+
+
+</div>
+<div className="w-full">
+<Line data={chartData} options={options} />
+</div>
+</div>
+);
 };
 
 export default MultiLineChart;
+
+
+
+
+
+
+
+
+
+
+

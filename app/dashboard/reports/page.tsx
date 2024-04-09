@@ -8,7 +8,6 @@ export default async function Page() {
   const healthData = await fetchHealthData();
     return(
       <>
-        <CardGrid />
         <MultiLineChart data = {healthData}/>
         <Features />
       </>
