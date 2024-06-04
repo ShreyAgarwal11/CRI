@@ -10,6 +10,7 @@ const CardGrid: React.FC = () => {
   const cardsData: CardProps[] = [
     { title: 'Speciality', options: ['Internal Medicine', 'Pediatrics', 'Surgery'] },
     { title: 'Setting', options: ['Outpatient', 'Inpatient', 'Emergency'] },
+
     { title: 'Name', options: ['Doe, Joe', 'Smith, Alice', 'Brown, John'] },
     { title: 'Location Name', options: ['Keck Medicine of USC', 'Mayo Clinic', 'Johns Hopkins Hospital'] },
   ];
@@ -24,7 +25,7 @@ const CardGrid: React.FC = () => {
   return (
     <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {cardsData.map((card, index) => (
-        <div key={index} className="bg-[#990000] p-4 rounded shadow-md">
+        <div key={index} className="bg-[#990000] p-4 rounded">
           <h2 className="font-bold text-xl mb-2 text-white">{card.title}</h2>
           <select
             className="p-2 rounded border border-gray-300"

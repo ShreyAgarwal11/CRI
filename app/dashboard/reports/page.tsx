@@ -1,5 +1,5 @@
 import MultiLineChart from "@/app/ui/reports/multiline";
-import fetchHealthData from "@/app/lib/data";
+import fetchHealthData from "@/app/lib/healthData";
 import CardGrid from "@/app/ui/reports/cards";
 import Features from "@/app/ui/reports/columns";
 import EFrailtyModal from "@/app/ui/reports/popup";

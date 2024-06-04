@@ -8,13 +8,11 @@ import {
   PointElement,
   LineElement,
   Tooltip,
-  Legend,
 } from 'chart.js';
 import { ChartData, ChartOptions } from 'chart.js';
 import { HealthMetric } from '@/app/lib/definitions';
-import Select from 'react-select';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip);
 
 interface MultiLineChartProps {
   data: HealthMetric[];
@@ -34,9 +32,16 @@ const options: ChartOptions<'line'> = {
   },
 };
 
-interface VisibleDatasets {
-  [key: string]: boolean;
-}
+const datasetOptions = [
+  { label: 'Mortality Risk', borderColor: 'rgb(255, 99, 132)', backgroundColor: 'rgba(255, 99, 132, 0.5)', pointStyle: 'circle' },
+  { label: 'Length of Stay', borderColor: 'rgb(54, 162, 235)', backgroundColor: 'rgba(54, 162, 235, 0.5)', pointStyle: 'star' },
+  { label: 'Readmission 30-60-90 days', borderColor: 'rgb(255, 206, 86)', backgroundColor: 'rgba(255, 206, 86, 0.5)', pointStyle: 'rect' },
+  { label: 'Escalation of Care', borderColor: 'rgb(75, 192, 192)', backgroundColor: 'rgba(75, 192, 192, 0.5)', pointStyle: 'triangle' },
+  { label: 'Breast Cancer Reoccurrence', borderColor: 'rgb(153, 102, 255)', backgroundColor: 'rgba(153, 102, 255, 0.5)', pointStyle: 'cross' },
+  { label: 'Suspected Hepatocellular Carcinoma', borderColor: 'rgb(255, 159, 64)', backgroundColor: 'rgba(255, 159, 64, 0.5)', pointStyle: 'circle' },
+  { label: 'Member Retention', borderColor: 'rgb(199, 199, 199)', backgroundColor: 'rgba(199, 199, 199, 0.5)', pointStyle: 'star' },
+  { label: 'Appointment No-shows', borderColor: 'rgb(255, 99, 71)', backgroundColor: 'rgba(255, 99, 71, 0.5)', pointStyle: 'rect' },
+];
 
 const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
   const [chartData, setChartData] = useState<ChartData<'line'>>({
@@ -44,29 +49,17 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
     datasets: [],
   });
 
-  const datasetOptions = [
-    { label: 'Thirty Day Mortality', borderColor: 'rgb(255, 99, 132)', backgroundColor: 'rgba(255, 99, 132, 0.5)', pointStyle: 'circle', isVisible: true },
-    { label: 'Sixty Day Mortality', borderColor: 'rgb(54, 162, 235)', backgroundColor: 'rgba(54, 162, 235, 0.5)', pointStyle: 'star' , isVisible: true },
-    { label: 'Ninety Day Mortality', borderColor: 'rgb(255, 206, 86)', backgroundColor: 'rgba(255, 206, 86, 0.5)', pointStyle: 'rect', isVisible: true },
-    { label: 'eFrailty', borderColor: 'rgb(75, 192, 192)', backgroundColor: 'rgba(75, 192, 192, 0.5)', pointStyle: 'triangle', isVisible: true },
-    { label: 'MESH', borderColor: 'rgb(153, 102, 255)', backgroundColor: 'rgba(153, 102, 255, 0.5)',pointStyle: 'cross', isVisible: true },
-  ];
-
-  const [visibleDatasets, setVisibleDatasets] = useState<VisibleDatasets>(
-    datasetOptions.reduce((acc: VisibleDatasets, option) => {
-      acc[option.label] = true;
-      return acc;
-    }, {})
-  );
-
   useEffect(() => {
-    const labels = data.map(d => d.month.toLocaleDateString());
-    const datasets = datasetOptions.filter(option => visibleDatasets[option.label]).map((option) => {
+    const labels = data.map(d => new Date(d.month).toLocaleDateString()); // Ensure proper date formatting
+
+    const datasets = datasetOptions.map((option) => {
       const dataKey = option.label.replace(/\s+/g, '_').toLowerCase() as keyof HealthMetric;
       const metricData = data.map(d => {
-        const value = d[dataKey];
+        const value = parseFloat(String(d[dataKey]));
         return typeof value === 'number' ? value : 0;
       });
+
+      console.log(`Data for ${option.label}:`, metricData); // Debug: Log the dataset for each option
 
       return {
         label: option.label,
@@ -80,103 +73,45 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
     });
 
     setChartData({ labels, datasets });
-}, [data, visibleDatasets]);
+  }, [data]);
 
-const handleOutcomeChange = (selectedOptions: { value: string; label: string; }[] | null) => {
-  if (selectedOptions && Array.isArray(selectedOptions)) {
-    const selectedOutcomes = selectedOptions.map(option => option.value);
-    const newVisibleDatasets: VisibleDatasets = {};
-    datasetOptions.forEach(option => {
-      newVisibleDatasets[option.label] = selectedOutcomes.includes(option.label);
-    });
-    setVisibleDatasets(newVisibleDatasets);
-  }
-};
-
-
-
-const specialityOptions = ['Internal Medicine', 'Pediatrics', 'Surgery'];
-const settingOptions = ['Outpatient', 'Inpatient', 'Emergency'];
-const nameOptions = ['Doe, Joe', 'Smith, Alice', 'Brown, John'];
-const locationNameOptions = ['Keck Medicine of USC', 'Mayo Clinic', 'Johns Hopkins Hospital'];
-
-return (
-  <div className="flex flex-col items-center w-full px-4 shadow-lg p-4 rounded-lg border-2 border-[#990000]">
-    <div className="flex flex-wrap justify-between w-full mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="w-full mb-4 bg-[#990000] p-5">
-        <label htmlFor="speciality" className="block text-white font-bold mb-2">Speciality</label>
-        <select id="speciality" className="p-2 rounded border border-gray-300" style={{ width: '100%' }}>
-          {specialityOptions.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+  return (
+    <div className="flex flex-col items-center w-full p-4 bg-white border border-black shadow-md">
+      <div className="w-full mb-6">
+        <Line data={chartData} options={options} />
       </div>
-      <div className="w-full mb-4 bg-[#990000] p-5">
-        <label htmlFor="setting" className="block text-white font-bold mb-2">Setting</label>
-        <select id="setting" className="p-2 rounded border border-gray-300" style={{ width: '100%' }}>
-          {settingOptions.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="w-full md:w-auto mb-4 bg-[#990000] p-5">
-        <label htmlFor="name" className="block text-white font-bold mb-2">Name</label>
-        <select id="name" className="p-2 rounded border border-gray-300" style={{ width: '100%' }}>
-          {nameOptions.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+      <div className="flex flex-wrap justify-between w-full grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="text-center">
+          <label className="block text-black font-bold mb-2">Patient Name</label>
+          <div className="bg-white p-2 rounded border border-gray-400">John Doe</div>
+        </div>
+        <div className="text-center">
+          <label className="block text-black font-bold mb-2">Location Name</label>
+          <div className="bg-white p-2 rounded border border-gray-400">Keck Medicine of USC</div>
+        </div>
+        <div className="text-center">
+          <label className="block text-black font-bold mb-2">Outcome</label>
+          <div className="bg-white p-2 rounded border border-gray-400">90-day Mortality</div>
+        </div>
+        <div className="text-center">
+          <label className="block text-black font-bold mb-2">Service Line</label>
+          <div className="bg-white p-2 rounded border border-gray-400">Outpatient</div>
+        </div>
       </div>
     </div>
-    <div className="flex flex-wrap justify-between w-full mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="w-full sm:w-1/2 md:w-auto mb-4 bg-[#990000] p-5">
-        <label htmlFor="location" className="block text-white font-bold mb-2">Location Name</label>
-        <select id="location" className="p-2 rounded border border-gray-300" style={{ width: '100%' }}>
-          {locationNameOptions.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="w-full sm:w-1/2 md:w-auto mb-4 bg-[#990000] p-5 relative">
-  <label htmlFor="outcomes" className="block text-white font-bold mb-2">Outcome</label>
-  <Select
-    id="outcomes"
-    className="p-2 rounded border border-gray-300"
-    options={datasetOptions.map(option => ({ value: option.label, label: option.label }))}
-    isMulti
-    menuPlacement="top"
-    styles={{ 
-      control: provided => ({ ...provided, maxHeight: '10px', overflowY: 'auto'  }), // Set a fixed height for the control
-    }}
-    onChange={(selectedOptions) => {
-      if (selectedOptions) {
-        const selectedValues = selectedOptions.map(option => ({ value: option.value, label: option.label }));
-        handleOutcomeChange(selectedValues);
-      }
-    }}
-  />
-</div>
-
-
-
-</div>
-<div className="w-full">
-<Line data={chartData} options={options} />
-</div>
-</div>
-);
+  );
 };
 
 export default MultiLineChart;
+
+
+
+
+
+
+
+
+
 
 
 

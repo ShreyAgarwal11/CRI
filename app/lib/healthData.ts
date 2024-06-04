@@ -3,7 +3,7 @@ import { HealthMetric } from './definitions';
 
 export default async function fetchHealthData() {
   try {
-    const data = await sql<HealthMetric>`SELECT * FROM health_metrics_new`;
+    const data = await sql<HealthMetric>`SELECT * FROM health_metric`;
     console.log(data);
     
     return data.rows;
